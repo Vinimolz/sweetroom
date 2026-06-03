@@ -16,6 +16,8 @@ import com.vinicius.sweetRoom.repository.ReservationRepository;
 import com.vinicius.sweetRoom.repository.RoomRepository;
 import com.vinicius.sweetRoom.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class ReservationService {
         private final UserRepository userRepository;
@@ -33,6 +35,7 @@ public class ReservationService {
                 this.validators = validators;
         }
 
+        @Transactional
         public ResponseReservationDTO createReservation(CreateReservationDTO dto) {
                 // Query both user and room
                 User user = userRepository.findById(dto.userId())
@@ -46,7 +49,7 @@ public class ReservationService {
                 // Create context for validation
                 ReservationValidationContext context = new ReservationValidationContext(dto, user, room);
 
-                // Chain of responsability pattern
+                // Chain of responsibility pattern
                 for (ReservationValidator validator : validators) {
                         validator.validate(context);
                 }

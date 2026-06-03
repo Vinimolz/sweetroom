@@ -7,7 +7,7 @@ import com.vinicius.sweetRoom.exceptions.ReservationValidationException;
 import com.vinicius.sweetRoom.repository.ReservationRepository;
 
 @Component
-@Order(3)
+@Order(4)
 public class RoomAvailabilityValidator implements ReservationValidator {
     private final ReservationRepository reservationRepository;
 
