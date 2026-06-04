@@ -42,7 +42,7 @@ public class ReservationService {
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "Could not find user with id: " + dto.userId()));
 
-                Room room = roomRepository.findById(dto.roomId())
+                Room room = roomRepository.findByIdForUpdate(dto.roomId())
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "Could not find room with id: " + dto.roomId()));
 
