@@ -1,6 +1,7 @@
 package com.vinicius.sweetRoom.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import com.vinicius.sweetRoom.exceptions.ResourceNotFoundException;
 import com.vinicius.sweetRoom.model.Reservation;
 import com.vinicius.sweetRoom.model.Room;
 import com.vinicius.sweetRoom.model.User;
+import com.vinicius.sweetRoom.model.enums.ReservationStatus;
 import com.vinicius.sweetRoom.repository.ReservationRepository;
 import com.vinicius.sweetRoom.repository.RoomRepository;
 import com.vinicius.sweetRoom.repository.UserRepository;
@@ -48,7 +50,6 @@ public class ReservationService {
 
                 // Create context for validation
                 ReservationValidationContext context = new ReservationValidationContext(dto, user, room);
-
                 // Chain of responsibility pattern
                 for (ReservationValidator validator : validators) {
                         validator.validate(context);
@@ -61,6 +62,10 @@ public class ReservationService {
 
         }
 
+        public List<ResponseReservationDTO> getByUserIdAndStatus(Long userId, ReservationStatus status) {
+                return listToDTO(reservationRepository.findByUserIdAndReservationStatus(userId, status));
+        }
+
         private ResponseReservationDTO reservationToDTO(Reservation reservation) {
                 return new ResponseReservationDTO(reservation.getUser().getId(),
                                 reservation.getRoom().getId(),
@@ -68,6 +73,10 @@ public class ReservationService {
                                 reservation.getReservationStart(),
                                 reservation.getReservationEnd(),
                                 reservation.getReservationStatus());
+        }
+
+        private List<ResponseReservationDTO> listToDTO(List<Reservation> reservations) {
+                return reservations.stream().map(this::reservationToDTO).collect(Collectors.toList());
         }
 
 }
