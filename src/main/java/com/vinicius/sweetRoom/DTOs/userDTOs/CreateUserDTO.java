@@ -10,5 +10,7 @@ public record CreateUserDTO(
 
                 @NotBlank(message = "User must have a valid email") @Email(message = "User must have a valid email") String email,
 
+                @NotBlank(message = "Password cannot be blank") String password,
+
                 UserRole userRole) {
 }

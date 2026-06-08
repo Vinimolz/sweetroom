@@ -59,4 +59,9 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(safeErrorMessage);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleServerSideException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + ex.getLocalizedMessage());
+    }
 }

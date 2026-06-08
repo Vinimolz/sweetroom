@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.vinicius.sweetRoom.DTOs.userDTOs.CreateUserDTO;
 import com.vinicius.sweetRoom.DTOs.userDTOs.ResponseUserDTO;
@@ -29,16 +30,21 @@ public class UserServiceTest {
     @Mock
     private UserRepository userRepo;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UserService userService;
 
     @Test
     void createUser_SuccessfulCreation_ReturnsResponseUserDTO() {
         // ARRANGE
-        CreateUserDTO createUserDTO = new CreateUserDTO("vinicius", "validemail@email.com", UserRole.STUDENT);
+        CreateUserDTO createUserDTO = new CreateUserDTO("vinicius", "validemail@email.com", "password123", UserRole.STUDENT);
 
         User mockUser = new User("Vinicius", "validemail@email.com", UserRole.STUDENT);
         mockUser.setId(1L);
+
+        when(passwordEncoder.encode(any(CharSequence.class))).thenReturn("hashedPassword");
 
         when(userRepo.existsByEmail(mockUser.getEmail())).thenReturn(false);
 
@@ -51,6 +57,7 @@ public class UserServiceTest {
         assertNotNull(result);
         assertEquals(1L, result.id());
 
+        verify(passwordEncoder, times(1)).encode("password123");
         verify(userRepo, times(1)).existsByEmail("validemail@email.com");
         verify(userRepo, times(1)).save(any(User.class));
     }
@@ -58,7 +65,7 @@ public class UserServiceTest {
     @Test
     void createUser_UnsuccessfulCreation_ReturnsDuplicatedResourceException() {
         // ARRANGE
-        CreateUserDTO createUserDTO = new CreateUserDTO("vinicius", "validemail.com", UserRole.STUDENT);
+        CreateUserDTO createUserDTO = new CreateUserDTO("vinicius", "validemail.com", "password123", UserRole.STUDENT);
 
         when(userRepo.existsByEmail(createUserDTO.email())).thenReturn(true);
 

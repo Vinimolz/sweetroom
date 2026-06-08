@@ -3,6 +3,7 @@ package com.vinicius.sweetRoom.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.vinicius.sweetRoom.DTOs.userDTOs.CreateUserDTO;
@@ -15,9 +16,11 @@ import com.vinicius.sweetRoom.repository.UserRepository;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<ResponseUserDTO> getAllUsers() {
@@ -35,7 +38,9 @@ public class UserService {
             throw new DuplicatedResourceException("This email already exists: " + dto.email());
         }
 
-        User newUser = userRepository.save(new User(dto.name(), dto.email(), dto.userRole()));
+        String encryptedPassword = passwordEncoder.encode(dto.password());
+
+        User newUser = userRepository.save(new User(dto.name(), dto.email(), encryptedPassword, dto.userRole()));
 
         return toUserDTO(newUser);
     }
