@@ -28,10 +28,16 @@ public class AuthenticationController {
     }
 
     @PostMapping()
-    public ResponseEntity login(@Valid @RequestBody AuthenticationDTO dto) {
+    public ResponseEntity<TokenJWTData> login(@Valid @RequestBody AuthenticationDTO dto) {
         var token = new UsernamePasswordAuthenticationToken(dto.email(), dto.password());
         var auth = authManager.authenticate(token);
-        var tokenJWT = tokenService.generateToken((User) auth.getPrincipal());
-        return ResponseEntity.ok(new TokenJWTData(tokenJWT));
+        
+        var principal = auth.getPrincipal();
+        if (principal instanceof User user) {
+            var tokenJWT = tokenService.generateToken(user);
+            return ResponseEntity.ok(new TokenJWTData(tokenJWT));
+        }
+        
+        throw new IllegalStateException("Authentication principal is not of type User");
     }
 }

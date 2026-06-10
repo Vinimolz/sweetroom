@@ -50,6 +50,7 @@ public class ReservationService {
 
                 // Create context for validation
                 ReservationValidationContext context = new ReservationValidationContext(dto, user, room);
+
                 // Chain of responsibility pattern
                 for (ReservationValidator validator : validators) {
                         validator.validate(context);

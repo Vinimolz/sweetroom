@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.vinicius.sweetRoom.model.User;
 
 @Service
@@ -36,7 +37,7 @@ public class TokenService {
                     .build()
                     .verify(tokenJWT)
                     .getSubject();
-        } catch (JWTCreationException ex) {
+        } catch (JWTVerificationException ex) {
             throw new RuntimeException("JWT token is invalid or expired");
         }
     }
